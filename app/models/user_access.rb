@@ -84,6 +84,7 @@ class UserAccess
       ].flatten.uniq
 
     User
+      .admins
       .from(User
               .admins
               .select("DISTINCT ON (users.id) users.*")
@@ -92,7 +93,7 @@ class UserAccess
   end
 
   def accessible_users(action)
-    return User.none unless [:manage, :view_reports].include?(action)
+    return User.none unless [:manage, :view_reports, :view_pii].include?(action)
     return User.non_admins if power_user?
     return User.none unless action_to_level(action).include?(user.access_level.to_sym)
 
@@ -129,9 +130,8 @@ class UserAccess
     LEVELS[user.access_level.to_sym][:grant_access]
   end
 
-  # TODO: add better, more flexible constraints to this than just restricting to power_users
-  def modify_access_level?
-    power_user?
+  def manage_organization?
+    power_user? || user.accessible_organizations(:manage).any?
   end
 
   def grant_access(new_user, selected_facility_ids)

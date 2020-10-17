@@ -6,6 +6,7 @@ class Facility < ApplicationRecord
   include PgSearch::Model
   include LiberalEnum
   extend FriendlyId
+  extend RegionSource
 
   before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
 
@@ -29,6 +30,7 @@ class Facility < ApplicationRecord
   has_many :patients, -> { distinct }, through: :encounters
   has_many :prescription_drugs
   has_many :appointments
+  has_many :teleconsultations
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -41,6 +43,13 @@ class Facility < ApplicationRecord
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "registration_facility_id"
+  has_many :assigned_patients,
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
+  has_many :assigned_hypertension_patients,
+    -> { with_hypertension },
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
 
@@ -85,7 +94,7 @@ class Facility < ApplicationRecord
   }
 
   delegate :protocol, to: :facility_group, allow_nil: true
-  delegate :organization, to: :facility_group, allow_nil: true
+  delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
   def hypertension_follow_ups_by_period(*args)
@@ -111,7 +120,7 @@ class Facility < ApplicationRecord
     blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
   end
 
-  def cohort_analytics(period, prev_periods)
+  def cohort_analytics(period:, prev_periods:)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
     query.call
   end
@@ -205,6 +214,24 @@ class Facility < ApplicationRecord
 
   def diabetes_enabled?
     enable_diabetes_management.present?
+  end
+
+  def opd_load_estimated?
+    monthly_estimated_opd_load.present?
+  end
+
+  def opd_load
+    monthly_estimated_opd_load || opd_load_for_facility_size
+  end
+
+  def opd_load_for_facility_size
+    case facility_size
+    when "community" then 100
+    when "small" then 300
+    when "medium" then 500
+    when "large" then 1000
+    else 1000
+    end
   end
 
   def teleconsultation_enabled?

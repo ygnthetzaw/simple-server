@@ -2,13 +2,15 @@
 // elements
 //
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
+const ACCESS_LEVEL_ID = "access-level"
 const ACCESS_LEVEL_POWER_USER = "power_user"
 
 AdminAccess = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccess.prototype = {
-  accessLevel: () => document.getElementById("access_level"),
+  accessLevel: () => document.getElementById(ACCESS_LEVEL_ID),
 
   facilityAccessPowerUser: () => document.getElementById("facility-access-power-user"),
 
@@ -44,7 +46,7 @@ AdminAccess.prototype = {
 
       this.updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
       this.updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
-      this.updateFacilityCount(targetCheckbox)
+      this.updateTotalFacilityCount()
     })
   },
 
@@ -88,6 +90,7 @@ AdminAccess.prototype = {
     const children = Array.from(target.closest("li").childNodes)
     const parentItem = target.closest(".access-item")
     const wrapper = children.find(containsClass("access-item-wrapper"))
+
     if (wrapper) {
       this.toggleItemCollapsed(parentItem)
     }
@@ -96,6 +99,12 @@ AdminAccess.prototype = {
   updateParentCheckedState: function (element, selector) {
     // find parent and sibling checkboxes
     const parent = (element.closest(["ul"]).parentNode).querySelector(selector)
+
+    if (parent === element) {
+      this.updateSelectAllCheckbox()
+      return
+    }
+
     const siblings = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
 
     // get checked state of siblings
@@ -112,20 +121,20 @@ AdminAccess.prototype = {
     // recurse until check is the top most parent
     if (element !== parent) {
       this.updateParentCheckedState(parent, selector)
-    } else {
-      this.updateSelectAllCheckbox()
     }
   },
 
   updateTotalFacilityCount: function () {
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
-    const [selected] = this.getSelectedCount(checkboxes)
+    const selected = this.getSelectedCount(checkboxes)[0]
+
     this.totalSelectedFacilitiesDiv().textContent = `${selected} facilities selected`
   },
 
   findAndUpdateFacilityCount: function () {
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
-    const orgCheckboxes = checkboxes.filter(({ name }) => name === "organizations[]")
+    const orgCheckboxes = checkboxes.filter(({name}) => name === "organizations[]")
+
     orgCheckboxes.forEach(this.updateFacilityCount.bind(this))
   },
 
@@ -135,14 +144,14 @@ AdminAccess.prototype = {
     const self = this
     const leafNodesByFacilityGroup = this.getLeafNodesByFacilityGroup(element)
     const facilities = Object.values(leafNodesByFacilityGroup).filter(node => node.length > 0)
-    facilities.forEach(([node]) => self.updateParentFacilityCount(node, ACCESS_LIST_INPUT_SELECTOR))
 
+    facilities.forEach(([node]) => self.updateParentFacilityCount(node, ACCESS_LIST_INPUT_SELECTOR))
     this.updateTotalFacilityCount()
   },
 
   getSelectedCount: function (childNodes) {
     return childNodes
-      .filter(({ name }) => name === "facilities[]")
+      .filter(({name}) => name === "facilities[]")
       .reduce(([selected, notSelected], item) =>
         item.checked ? [selected + 1, notSelected] : [selected, notSelected + 1], [0, 0])
   },
@@ -164,7 +173,9 @@ AdminAccess.prototype = {
   updateParentFacilityCount: function (element, selector) {
     const parent = this.getParentNode(element, selector)
     const children = this.getChildNodes(parent, selector)
-    const [selected, notSelected] = this.getSelectedCount(children)
+    const selectedCount = this.getSelectedCount(children)
+    const selected = selectedCount[0]
+    const notSelected = selectedCount[1]
     const accessRatioDiv = element.closest(["ul"]).parentNode.querySelector(".access-ratio")
     this.setAccessRatio(accessRatioDiv, selected, notSelected)
 
@@ -181,7 +192,7 @@ AdminAccess.prototype = {
       .reduce((nodes, item) => {
         const facilityGroupId = item.dataset.facilityGroupId
         const itemsInGroup = nodes[facilityGroupId] ? [...nodes[facilityGroupId], item] : [item]
-        return Object.assign(nodes, { [facilityGroupId]: itemsInGroup })
+        return Object.assign(nodes, {[facilityGroupId]: itemsInGroup})
       }, {})
   },
 
@@ -212,6 +223,7 @@ AdminAccess.prototype = {
 AdminAccessInvite = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccessInvite.prototype = Object.create(AdminAccess.prototype)
 AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   selectAllFacilitiesInput: () => document.getElementById("select-all-facilities-input"),
@@ -252,15 +264,14 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
         checkbox.checked = _self.selectAllFacilitiesInput().checked
       }
       _self.updateTotalFacilityCount()
-      _self.findAndUpdateFacilityCount()
     })
   },
 
   accessLevelSelector: function () {
-    const accessLevel = $("#access_level")
+    const accessLevel = $(`#${ACCESS_LEVEL_ID}`)
 
     // initialize the access_level select dropdown
-    accessLevel.selectpicker({
+    return accessLevel.selectpicker({
       noneSelectedText: "Select an access level..."
     });
   },
@@ -299,14 +310,13 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
 AdminAccessEdit = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccessEdit.prototype = Object.create(AdminAccessInvite.prototype)
 AdminAccessEdit.prototype = Object.assign(AdminAccessEdit.prototype, {
   accessLevelSelector: function () {
-    // super
-    AdminAccessInvite.prototype.accessLevelSelector.call(this)
+    const _super = AdminAccessInvite.prototype.accessLevelSelector.call(this)
 
-    const accessLevel = $("#access-level")
-    this.toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
+    this.toggleAccessTreeVisibility(_super.val() === ACCESS_LEVEL_POWER_USER)
   }
 })
 

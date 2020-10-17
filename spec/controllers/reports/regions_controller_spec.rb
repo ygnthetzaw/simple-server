@@ -3,11 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::RegionsController, type: :controller do
   let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
   let(:organization) { FactoryBot.create(:organization) }
-  let(:cvho) do
-    create(:admin, :supervisor, organization: organization).tap do |user|
-      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    end
-  end
+  let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -18,6 +14,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
   end
 
   context "index" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+    end
+
     it "loads available districts" do
       sign_in(cvho.email_authentication)
       get :index
@@ -108,6 +109,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "returns period info for every month" do
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      data = assigns(:data)
+      expect(data[:period_info][dec_2019_period]).to eq({"bp_control_start_date" => "1-Oct-2019", "bp_control_end_date" => "31-Dec-2019"})
+    end
+
     it "retrieves district data" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
@@ -140,6 +150,76 @@ RSpec.describe Reports::RegionsController, type: :controller do
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
+    end
+  end
+
+  context "download" do
+    render_views
+
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+    end
+
+    it "retrieves cohort data for a facility" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :download, params: {id: @facility.slug, report_scope: "facility", period: "month", format: "csv"}
+      end
+      expect(response).to be_successful
+      expect(response.body).to include("CHC Barnagar Monthly Cohort Report")
+      expect(response.headers["Content-Disposition"]).to include('filename="facility-monthly-cohort-report_CHC-Barnagar')
+    end
+
+    it "retrieves cohort data for a facility group" do
+      jan_2020 = Time.parse("January 1 2020")
+      facility_group = @facility.facility_group
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :download, params: {id: facility_group.slug, report_scope: "district", period: "quarter", format: "csv"}
+      end
+      expect(response).to be_successful
+      expect(response.body).to include("#{facility_group.name} Quarterly Cohort Report")
+      expect(response.headers["Content-Disposition"]).to include('filename="facility_group-quarterly-cohort-report_')
+    end
+  end
+
+  describe "#whatsapp_graphics" do
+    render_views
+
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+      sign_in(cvho.email_authentication)
+    end
+
+    context "html requested" do
+      it "renders graphics_header partial" do
+        get :whatsapp_graphics, format: :html, params: {id: @facility.slug, report_scope: "facility"}
+
+        expect(response).to be_ok
+        expect(response).to render_template("shared/graphics/_graphics_partial")
+      end
+    end
+
+    context "png requested" do
+      it "renders the image template for downloading" do
+        get :whatsapp_graphics, format: :png, params: {id: @facility_group.slug, report_scope: "district"}
+
+        expect(response).to be_ok
+        expect(response).to render_template("shared/graphics/image_template")
+      end
     end
   end
 end
