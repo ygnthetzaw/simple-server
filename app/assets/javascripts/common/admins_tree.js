@@ -43,7 +43,7 @@ const AccessTree = function () {
     return function () {
       const tree = self.accessTree;
       if (_.isNull(hierarchy[accessType].parent)) {
-        return tree[accessType];
+        return Object.values(tree[accessType]);
       }
       const accessItem = tree[accessType][itemId]
       return accessItem.parent().children()
