@@ -30,6 +30,19 @@ sup {
     color: $grey-dark;
 }
 
+.tooltip-inner {
+  text-align: left;
+  font-size: 90%;
+  
+  span.math {
+    min-width: 6.5em;
+    display: inline-block;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 1em;
+  }
+}
+
 .link-row {
     display: block;
     padding: 8px 0;
@@ -108,8 +121,7 @@ th sup {
         }
 
         [aria-sort] {
-            background: $blue;
-            color: #fff;
+            background: linear-gradient(to bottom, rgba(0,118,235,1) 2%, rgba(240,242,245,1) 2%, rgba(240,242,245,1) 2%, rgba(240,242,245,1) 100%);
         }
 
         th[role="columnheader"]:not(.no-sort)::after {
@@ -219,12 +231,22 @@ th sup {
 
     td.type-percent em {
       font-style: normal;
-      background: #F1DBFF;
-      color: #BE72E3;
+      background: $grey-light;
+      color: $grey-dark;
       border-radius: 100px;
       padding: 2px;
       width: 3.5em;
       display: block;
+      
+      &.warning {
+        background: $red;
+        color: #fff;
+      }
+      
+      &.caution {
+        background: $yellow;
+        color: $yellow-darkest;
+      }
     }
 
     .row-total td.type-percent em {

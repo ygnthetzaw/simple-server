@@ -77,6 +77,8 @@
 .bb-2px { border-bottom: 2px solid; }
 .bl-1px { border-left: 1px solid; }
 .bc-purple { border-color: $purple; }
+.bc-red { border-color: $red; }
+.bc-yellow { border-color: $yellow; }
 .bt-grey-light { border-top-color: $grey-light; }
 .bb-grey-light { border-bottom-color: $grey-light; }
 .bb-grey-medium { border-bottom-color: $grey-mid; }
@@ -94,6 +96,7 @@
 .bg-green-medium { background-color: $green-mid; }
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }
+.bg-yellow { background-color: $yellow; }
 .bg-white { background-color: #ffffff; }
 .bg-grey-lightest { background-color: $grey-lightest; }
 .bg-grey-light { background-color: $grey-light; }

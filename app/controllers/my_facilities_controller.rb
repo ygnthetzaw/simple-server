@@ -106,6 +106,9 @@ class MyFacilitiesController < AdminController
 
   def medication_inventory
   end
+  
+  def medication_inventory_consumption
+  end
 
   private
 
