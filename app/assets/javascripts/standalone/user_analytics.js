@@ -189,6 +189,11 @@ function filterDataByGender(tableName) {
   selectedTableElement[0].style.display = 'inline-table';
 }
 
+// Spiking java method calls from the rendered webview
+function logCurrentFacility() {
+    console.log(injectedObject.currentFacility())
+}
+
 //
 // Overlays
 //
