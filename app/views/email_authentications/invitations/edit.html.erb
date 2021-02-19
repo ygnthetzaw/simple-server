@@ -6,11 +6,33 @@
       <%= f.hidden_field :invitation_token, readonly: true %>
 
       <% if f.object.class.require_password_on_accepting %>
-        <%= f.password_field :password %>
-        <%= f.password_field :password_confirmation %>
+        <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
+        <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show"></button>
+
       <% end %>
 
       <%= f.primary t("devise.invitations.edit.submit_button") %>
     <% end %>
   </div>
 </div>
+
+<script>
+  const passwordInput = document.getElementById("password");
+  const togglePasswordButton = document.getElementById("toggle-password");
+  togglePasswordButton.addEventListener("click", togglePassword);
+
+  function togglePassword() {
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      togglePasswordButton.setAttribute("aria-label", "Hide password.");
+      togglePasswordButton.value = "Hide"
+    } else {
+      passwordInput.type = "password";
+      togglePasswordButton.setAttribute(
+        "aria-label",
+        "Show password as plain text. Warning: this will display your password on the screen."
+      );
+      togglePasswordButton.value = "Show"
+    }
+  }
+</script>

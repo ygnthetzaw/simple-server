@@ -4,10 +4,17 @@
   <div class="col-md-6">
     <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, label_errors: false) do |f| %>
       <%= f.hidden_field :reset_password_token %>
+      <div class="form-group">
+        <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
 
-      <%= f.password_field :password, autofocus: true, autocomplete: "off" %>
-      <%= f.password_field :password_confirmation, autocomplete: "off", label: "Confirm new password" %>
+        <%
+=begin%>
+ <input name="email_authentication[password]" type="password" id="password" class="form-control rounded-right" required>  
+<%
+=end%>
+        <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show"></button>
 
+      </div>
       <%= f.primary "Change my password" %>
     <% end %>
   </div>
@@ -16,3 +23,24 @@
 <div class="actions mt-4">
   <%= render "email_authentications/shared/links" %>
 </div>
+
+<script>
+  const passwordInput = document.getElementById("password");
+  const togglePasswordButton = document.getElementById("toggle-password");
+  togglePasswordButton.addEventListener("click", togglePassword);
+
+  function togglePassword() {
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      togglePasswordButton.setAttribute("aria-label", "Hide password.");
+      togglePasswordButton.value = "Hide"
+    } else {
+      passwordInput.type = "password";
+      togglePasswordButton.setAttribute(
+        "aria-label",
+        "Show password as plain text. Warning: this will display your password on the screen."
+      );
+      togglePasswordButton.value = "Show"
+    }
+  }
+</script>
