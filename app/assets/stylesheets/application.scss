@@ -642,10 +642,13 @@ span.inactive {
 // }
 
 .password-toggle-button {
-	height: 34px;
+	color: $blue;
+	height: 29px;
+	line-height: 0;
+	padding-top: 4px;
 	position: absolute;
-	right: 20px;
-	top: calc(1em + 17px);
+	right: 4px;
+	top: 35px;
 	width: 60px;
 	z-index: 10;
 }
