@@ -618,6 +618,15 @@ span.inactive {
   padding: 10px 16px;
 }
 
+.filters-modal-toggle {
+	display: block;
+	text-transform: uppercase;
+	letter-spacing: 0.3em;
+	font-size: 12px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
 .password-toggle-button {
 	color: $blue;
 	height: 29px;
