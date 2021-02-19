@@ -137,6 +137,8 @@ Rails.application.routes.draw do
     path: "email_authentications",
     controllers: {invitations: "email_authentications/invitations"}
 
+  post "email_authentications/validate_password", to: "email_authentications/passwords#validate_password"
+
   resources :admins do
     member do
       get "access_tree/:page", to: "admins#access_tree", as: :access_tree
