@@ -4,6 +4,6 @@ class EmailAuthentications::PasswordsController < ApplicationController
     auth = EmailAuthentication.new(password: params[:password])
     auth.valid?
     errors = auth.errors[:password]
-    render json: to_response(errors)
+    render json: errors
   end
 end
