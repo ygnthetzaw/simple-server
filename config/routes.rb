@@ -137,7 +137,7 @@ Rails.application.routes.draw do
     path: "email_authentications",
     controllers: {invitations: "email_authentications/invitations"}
 
-  post "email_authentications/validate_password", to: "email_authentications/passwords#validate_password"
+  post "email_authentications/validate", to: "email_authentications/password_validations#create"
 
   resources :admins do
     member do

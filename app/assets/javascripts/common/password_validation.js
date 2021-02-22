@@ -28,30 +28,20 @@ PasswordValidation = function() {
 
   this.validatePassword = function() {
     console.log("MAKING REQUEST")
-    // $.post("http://localhost:3000/email_authentications/validate_password",
-    // { password: this.passwordField.val()},
-    // function(data, status){
-    //   console.log(status)
-    //   console.log(data)
-    //   this.timer = null;
-    // });
 
+    const token = $('meta[name=csrf-token]').attr('content')
+    const url = "http://localhost:3000/email_authentications/validate"
     $.ajax({
       type: "POST",
-      url: "http://localhost:3000/email_authentications/validate_password",
-      // headers: {
-      //   "Content-Type": "application/json",
-      //   "Accept": "application/json",
-      // },
-      data: {
-        password: this.passwordField.val(),
-      }
+      url: url,
+      headers: {
+        "X-CSRF-Token": token
+      },
+      data: {"password": this.passwordField.val()}
     }).done(function(data, status){
       console.log(status)
       console.log(data)
       this.timer = null;
     });
-
-
   }
 }
