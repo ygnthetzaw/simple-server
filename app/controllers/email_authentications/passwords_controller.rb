@@ -1,4 +1,4 @@
-class EmailAuthentications::PasswordsController < ApplicationController
+class EmailAuthentications::PasswordsController < ActionController::Base
 
   def validate_password
     auth = EmailAuthentication.new(password: params[:password])
