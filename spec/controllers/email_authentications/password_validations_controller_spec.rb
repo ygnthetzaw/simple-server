@@ -10,14 +10,13 @@ RSpec.describe EmailAuthentications::PasswordValidationsController, type: :reque
       expect(response.status).to eq 200
       expect(JSON.parse(response.body)).to eq(expected_response)
     end
-  end
 
-  it "returns no errors if the password is valid" do
-    post "/email_authentications/validate", params: {password: "Resolve2SaveLives"}
-    body = JSON.parse(response.body)
-    expected_response = {"errors" => []}
-    expect(response.status).to eq 200
-    expect(JSON.parse(response.body)).to match_array(expected_response)
+    it "returns no errors if the password is valid" do
+      post "/email_authentications/validate", params: {password: "Resolve2SaveLives"}
+      body = JSON.parse(response.body)
+      expected_response = {"errors" => []}
+      expect(response.status).to eq 200
+      expect(JSON.parse(response.body)).to match_array(expected_response)
+    end
   end
-
 end
