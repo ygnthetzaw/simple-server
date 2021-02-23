@@ -1,18 +1,18 @@
 PasswordValidation = function() {
-  const DebounceTimer = 500;
+  const DebounceTimeout = 500;
   this.timer = null;
-  this.passwordInput = $("#password");
   this.response = null;
+  this.passwordInput = $("#password");
 
   this.addPasswordListener = function() {
     console.log("FIELD: ", this.passwordInput)
-    this.passwordInput.on("input", this.handlePasswordInput.bind(this));
+    this.passwordInput.on("input", this.handlePasswordInput);
   }
 
   this.setTimer = function() {
     console.log("STARTING TIMER")
-    this.cancelTimer()
-    this.timer = setTimeout(this.validatePassword.bind(this), DebounceTimer);
+    this.cancelTimer();
+    this.timer = setTimeout(this.validatePassword, DebounceTimeout);
   }
 
   this.cancelTimer = function() {
@@ -22,15 +22,15 @@ PasswordValidation = function() {
     this.timer = null;
   }
 
-  this.handlePasswordInput = function() {
+  this.handlePasswordInput = () => {
     console.log("CHANGE", this.passwordInput.val());
     this.setTimer();
   }
 
-  this.validatePassword = function() {
+  this.validatePassword = () => {
     console.log("MAKING REQUEST")
 
-    const token = $('meta[name=csrf-token]').attr('content')
+    const token = $("meta[name=csrf-token]").attr("content")
     const url = "http://localhost:3000/email_authentications/validate"
     $.ajax({
       type: "POST",
