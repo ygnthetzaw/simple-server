@@ -73,10 +73,9 @@ en:
   password_creation:
     prompt: "Keep your account's data private. Create a secure password:"
     too_short: "At least 10 characters long"
-    needs_lower_case: "Includes one number"
-    needs_upper_case: "Includes one lower case character"
-    needs_number: "Includes one upper case character"
-
+    needs_number: "Includes one number"
+    needs_lower_case: "Includes one lower case character"
+    needs_upper_case: "Includes one upper case character"
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'

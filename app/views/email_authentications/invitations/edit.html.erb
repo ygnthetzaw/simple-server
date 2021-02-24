@@ -8,7 +8,7 @@
           <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
           <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
         </div>
-        <span class="password-prompt"><%= t("password_creation.prompt") %></span>
+        <p class="password-prompt"><%= t("password_creation.prompt") %></p>
         <ul class="password-validation-checklist">
           <li><i class="fas fa-check-circle" id="length"></i><%= t("password_creation.too_short") %></li>
           <li><i class="fas fa-check-circle" id="number"></i><%= t("password_creation.needs_number") %></li>

@@ -654,12 +654,17 @@ span.inactive {
 }
 
 .password-prompt {
-	color: $grey-dark
+	color: $grey-dark;
+	margin-bottom: 4px;
 }
 
 .password-validation-checklist {
 	list-style-type: none;
 	padding-left: 0;
+
+	li {
+		margin-bottom: 4px;
+	}
 
 	.fa-check-circle {
 		height: 16px;
