@@ -5,9 +5,22 @@
     <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, label_errors: false) do |f| %>
       <%= f.hidden_field :reset_password_token %>
         <div style="position: relative;">
-          <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
+
+          <%
+=begin%>
+  don't commit the removal of auto focusing
+<%
+=end%>
+          <%= f.password_field :password, type: "password", id: "password", class: "password-field", autocomplete: "off" %>
           <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
         </div>
+        Keep your account's data private. Create a secure password:
+        <ul class="password-validation-checklist">
+          <li><i class="fas fa-check-circle" id="length"></i>At least 10 characters long</li>
+          <li><i class="fas fa-check-circle" id="number"></i>Includes one number</li>
+          <li><i class="fas fa-check-circle" id="lower"></i>Includes one lower case character</li>
+          <li><i class="fas fa-check-circle" id="upper"></i>Includes one upper case character</li>
+        </ul>
       <%= f.primary "Change my password" %>
     <% end %>
   </div>
@@ -19,4 +32,6 @@
 
 <script>
   new PasswordVisibilityToggle();
+  const validator = new PasswordValidation();
+  validator.initialize();
 </script>

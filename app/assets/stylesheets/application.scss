@@ -637,3 +637,16 @@ span.inactive {
 	width: 60px;
 	z-index: 10;
 }
+
+.password-validation-checklist {
+	list-style-type: none;
+	padding-left: 0;
+
+	.fa-check-circle {
+		color: $grey-mid;
+	}
+
+	.complete {
+		color: $green-dark;
+	}
+}
