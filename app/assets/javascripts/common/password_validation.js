@@ -50,20 +50,21 @@ PasswordValidation = function() {
         this.result = DefaultResult;
       }
       this.updateChecklist();
+      this.updateSubmit();
     });
 
     this.updateResults = function(response) {
-      this.result["length"] = response.includes("must be between 10 and 128 characters");
-      this.result["lower"] = response.includes("must contain at least one lower case letter");
-      this.result["upper"] = response.includes("must contain at least one upper case letter");
-      this.result["number"] = response.includes("must contain at least one number");
+      this.result["length"] = !response.includes("must be between 10 and 128 characters");
+      this.result["lower"] = !response.includes("must contain at least one lower case letter");
+      this.result["upper"] = !response.includes("must contain at least one upper case letter");
+      this.result["number"] = !response.includes("must contain at least one number");
     }
 
     this.updateChecklist = function() {
-      this.result["length"] ? this.uncheckItem("length") : this.checkItem("length")
-      this.result["lower"]? this.uncheckItem("lower") : this.checkItem("lower")
-      this.result["upper"] ? this.uncheckItem("upper") : this.checkItem("upper")
-      this.result["number"] ? this.uncheckItem("number") : this.checkItem("number")
+      this.result["length"] ? this.checkItem("length") : this.uncheckItem("length")
+      this.result["lower"]? this.checkItem("lower") : this.uncheckItem("lower")
+      this.result["upper"] ? this.checkItem("upper") : this.uncheckItem("upper")
+      this.result["number"] ? this.checkItem("number") : this.uncheckItem("number")
     }
 
     this.checkItem = function(id) {
@@ -78,5 +79,16 @@ PasswordValidation = function() {
       item.removeClass("complete");
     }
 
+    this.updateSubmit = function() {
+      const button = $("#password-submit");
+      const allPass = Object.values(this.result).every(item => item === true);
+      console.log('result', this.result)
+      console.log("True", button)
+      if (allPass) {
+        button.removeAttr("disabled");
+      } else {
+        button.attr("disabled", true);
+      }
+    }
   }
 }

@@ -21,7 +21,7 @@
           <li><i class="fas fa-check-circle" id="lower"></i>Includes one lower case character</li>
           <li><i class="fas fa-check-circle" id="upper"></i>Includes one upper case character</li>
         </ul>
-      <%= f.primary "Change my password" %>
+      <%= f.primary "Change my password", id: "password-submit", disabled: true %>
     <% end %>
   </div>
 </div>
