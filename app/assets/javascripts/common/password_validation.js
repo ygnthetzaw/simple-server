@@ -68,15 +68,17 @@ PasswordValidation = function() {
     }
 
     this.checkItem = function(id) {
-      const item = $(`#${id}`);
-      if (item.hasClass("complete")) return
-      item.addClass("complete");
+      const icon = $(`#${id}-icon`);
+      icon.addClass("completed-icon");
+      const text = $(`#${id}-text`);
+      text.addClass("completed-text");
     }
 
     this.uncheckItem = function(id) {
-      const item = $(`#${id}`);
-      if (!item.hasClass("complete")) return
-      item.removeClass("complete");
+      const icon = $(`#${id}-icon`);
+      icon.removeClass("completed-icon");
+      const text = $(`#${id}-text`);
+      text.removeClass("completed-text");
     }
 
     this.updateSubmit = function() {

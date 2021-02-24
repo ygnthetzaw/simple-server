@@ -659,6 +659,7 @@ span.inactive {
 }
 
 .password-validation-checklist {
+	color: $grey-mid;
 	list-style-type: none;
 	padding-left: 0;
 
@@ -666,14 +667,17 @@ span.inactive {
 		margin-bottom: 4px;
 	}
 
+	.completed-text {
+		color: black;
+	}
+
 	.fa-check-circle {
 		height: 16px;
-		color: $grey-mid;
 		margin-right: 8px;
 		width: 16px;
 	}
 
-	.complete {
+	.completed-icon {
 		color: $green-dark;
 	}
 }
