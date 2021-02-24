@@ -629,13 +629,33 @@ span.inactive {
 
 .password-toggle-button {
 	color: $blue;
-	height: 34px;
+	bottom: 10px;
+	font-size: 14px;
+	height: 24px;
+	// left: 425px;
 	line-height: 0;
+	padding: 0px;
 	position: absolute;
-	right: 2px;
-	top: calc(1em + 17px);
-	width: 60px;
+	right: 40px;
+	width: 47px;
 	z-index: 10;
+}
+
+.password-form {
+	position: relative;
+
+	.form-group {
+		margin-bottom: 7px
+	}
+}
+
+.password-field {
+	height: 44px;
+	width: 480px;
+}
+
+.password-prompt {
+	color: $grey-dark
 }
 
 .password-validation-checklist {
@@ -643,10 +663,19 @@ span.inactive {
 	padding-left: 0;
 
 	.fa-check-circle {
+		height: 16px;
 		color: $grey-mid;
+		margin-right: 8px;
+		width: 16px;
 	}
 
 	.complete {
 		color: $green-dark;
 	}
+}
+
+.password-submit {
+	font-size: 16px;
+	height: 43px;
+	width: 141px;
 }
