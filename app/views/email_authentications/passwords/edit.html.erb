@@ -5,21 +5,15 @@
     <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, label_errors: false) do |f| %>
       <%= f.hidden_field :reset_password_token %>
         <div class="password-form">
-
-          <%
-=begin%>
-  don't commit the removal of auto focusing
-<%
-=end%>
-          <%= f.password_field :password, type: "password", id: "password", class: "password-field", autocomplete: "off" %>
+          <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
           <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
         </div>
-        <span class="password-prompt">Keep your account's data private. Create a secure password:</span>
+        <span class="password-prompt"><%= t("password_creation.prompt") %></span>
         <ul class="password-validation-checklist">
-          <li><i class="fas fa-check-circle" id="length"></i>At least 10 characters long</li>
-          <li><i class="fas fa-check-circle" id="number"></i>Includes one number</li>
-          <li><i class="fas fa-check-circle" id="lower"></i>Includes one lower case character</li>
-          <li><i class="fas fa-check-circle" id="upper"></i>Includes one upper case character</li>
+          <li><i class="fas fa-check-circle" id="length"></i><%= t("password_creation.too_short") %></li>
+          <li><i class="fas fa-check-circle" id="number"></i><%= t("password_creation.needs_number") %></li>
+          <li><i class="fas fa-check-circle" id="lower"></i><%= t("password_creation.needs_lower_case") %></li>
+          <li><i class="fas fa-check-circle" id="upper"></i><%= t("password_creation.needs_upper_case") %></li>
         </ul>
       <%= f.primary "Set password", id: "password-submit", disabled: true %>
     <% end %>
