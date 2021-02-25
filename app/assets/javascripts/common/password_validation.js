@@ -10,25 +10,21 @@ PasswordValidation = function() {
   }
 
   this.handlePasswordInput = () => {
-    console.log("CHANGE", this.passwordInput.val());
     this.setTimer();
   }
 
   this.setTimer = function() {
-    console.log("STARTING TIMER")
     this.cancelTimer();
     this.timer = setTimeout(this.validatePassword, DebounceTimeout);
   }
 
   this.cancelTimer = function() {
-    console.log("CANCELING TIMER")
     if (!this.timer) return;
     clearTimeout(this.timer);
     this.timer = null;
   }
 
   this.validatePassword = () => {
-    console.log("MAKING REQUEST")
     const token = $("meta[name=csrf-token]").attr("content")
     const url = "http://localhost:3000/email_authentications/validate"
     const password = this.passwordInput.val();
@@ -41,16 +37,14 @@ PasswordValidation = function() {
       },
       data: {"password": password}
     }).done((data, status) => {
-      console.log(status)
-      console.log(data)
-      this.timer = null;
       if (status === "success") {
         this.updateResults(data["errors"]);
       } else {
-        this.result = DefaultResult;
+        this.updateResults(DefaultResult);
       }
+      this.timer = null;
       this.updateChecklist();
-      this.updateSubmit();
+      this.updateSubmitStatus();
     });
 
     this.updateResults = function(response) {
@@ -62,7 +56,7 @@ PasswordValidation = function() {
 
     this.updateChecklist = function() {
       this.result["length"] ? this.checkItem("length") : this.uncheckItem("length")
-      this.result["lower"]? this.checkItem("lower") : this.uncheckItem("lower")
+      this.result["lower"] ? this.checkItem("lower") : this.uncheckItem("lower")
       this.result["upper"] ? this.checkItem("upper") : this.uncheckItem("upper")
       this.result["number"] ? this.checkItem("number") : this.uncheckItem("number")
     }
@@ -81,11 +75,9 @@ PasswordValidation = function() {
       text.removeClass("completed-text");
     }
 
-    this.updateSubmit = function() {
+    this.updateSubmitStatus = function() {
       const button = $("#password-submit");
       const allPass = Object.values(this.result).every(item => item === true);
-      console.log('result', this.result)
-      console.log("True", button)
       if (allPass) {
         button.removeAttr("disabled");
       } else {
