@@ -1,31 +1,35 @@
 <h1>Change your password</h1>
-
-<div class="row">
-  <div class="col-md-6">
-    <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, label_errors: false) do |f| %>
-      <%= f.hidden_field :reset_password_token %>
-        <div class="password-form">
-          <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
-          <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
-        </div>
-        <p class="password-prompt"><%= t("password_creation.prompt") %></p>
-        <ul class="password-validation-checklist">
-          <li id="length-text"><i class="fas fa-check-circle" id="length-icon"></i><%= t("password_creation.too_short") %></li>
-          <li id="number-text"><i class="fas fa-check-circle" id="number-icon"></i><%= t("password_creation.needs_number") %></li>
-          <li id="lower-text"><i class="fas fa-check-circle" id="lower-icon"></i><%= t("password_creation.needs_lower_case") %></li>
-          <li id="upper-text"><i class="fas fa-check-circle" id="upper-icon"></i><%= t("password_creation.needs_upper_case") %></li>
-        </ul>
-      <%= f.primary "Change password", id: "password-submit", disabled: true %>
-    <% end %>
+<% if resource.errors.none? %>
+  <div class="row">
+    <div class="col-md-6">
+      <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, label_errors: false) do |f| %>
+        <%= f.hidden_field :reset_password_token %>
+          <div class="password-form">
+            <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
+            <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
+          </div>
+          <p class="password-prompt"><%= t("password_creation.prompt") %></p>
+          <ul class="password-validation-checklist">
+            <li id="length-text"><i class="fas fa-check-circle" id="length-icon"></i><%= t("password_creation.too_short") %></li>
+            <li id="number-text"><i class="fas fa-check-circle" id="number-icon"></i><%= t("password_creation.needs_number") %></li>
+            <li id="lower-text"><i class="fas fa-check-circle" id="lower-icon"></i><%= t("password_creation.needs_lower_case") %></li>
+            <li id="upper-text"><i class="fas fa-check-circle" id="upper-icon"></i><%= t("password_creation.needs_upper_case") %></li>
+          </ul>
+        <%= f.primary "Change password", id: "password-submit", disabled: true %>
+      <% end %>
+    </div>
   </div>
-</div>
 
-<div class="actions mt-4">
-  <%= render "email_authentications/shared/links" %>
-</div>
+  <div class="actions mt-4">
+    <%= render "email_authentications/shared/links" %>
+  </div>
 
-<script>
-  new PasswordVisibilityToggle();
-  const validator = new PasswordValidation();
-  validator.initialize();
-</script>
+  <script>
+    new PasswordVisibilityToggle();
+    const validator = new PasswordValidation();
+    validator.initialize();
+  </script>
+<% else %>
+  This password reset link is no longer valid. You can request a new reset link
+  <%= link_to "here", new_email_authentication_password_path %>.
+<% end %>
