@@ -1,27 +1,20 @@
 PasswordValidation = function() {
   const DebounceTimeout = 500;
-  const DefaultResult = {length: false, lower: false, upper: false, number: false}
 
-  this.initialize = function() {
+  this.initialize = () => {
     this.timer = null;
-    this.result = DefaultResult;
     this.passwordInput = $("#password");
-    this.passwordInput.on("input", this.handlePasswordInput);
+    this.passwordInput.on("input", this.debounce);
   }
 
-  this.handlePasswordInput = () => {
-    this.setTimer();
-  }
+  this.debounce = () => {
+    const later = () => {
+      clearTimeout(this.timer);
+      this.validatePassword();
+    };
 
-  this.setTimer = function() {
-    this.cancelTimer();
-    this.timer = setTimeout(this.validatePassword, DebounceTimeout);
-  }
-
-  this.cancelTimer = function() {
-    if (!this.timer) return;
     clearTimeout(this.timer);
-    this.timer = null;
+    this.timer = setTimeout(later, DebounceTimeout);
   }
 
   this.validatePassword = () => {
@@ -37,52 +30,43 @@ PasswordValidation = function() {
       },
       data: {"password": password}
     }).done((data, status) => {
+      let response = []
       if (status === "success") {
-        this.updateResults(data["errors"]);
-      } else {
-        this.updateResults(DefaultResult);
+        response = data["errors"]
       }
-      this.timer = null;
-      this.updateChecklist();
-      this.updateSubmitStatus();
+      console.log(data["errors"])
+      this.updateChecklist(response);
+      this.updateSubmitStatus(response);
     });
+  }
 
-    this.updateResults = function(response) {
-      this.result["length"] = !response.includes("must be between 10 and 128 characters");
-      this.result["lower"] = !response.includes("must contain at least one lower case letter");
-      this.result["upper"] = !response.includes("must contain at least one upper case letter");
-      this.result["number"] = !response.includes("must contain at least one number");
-    }
+  this.updateChecklist = (response) => {
+    response.includes("too_short") ? this.uncheckItem("length") : this.checkItem("length");
+    response.includes("needs_lower") ? this.uncheckItem("lower") : this.checkItem("lower");
+    response.includes("needs_upper") ? this.uncheckItem("upper") : this.checkItem("upper");
+    response.includes("needs_number") ? this.uncheckItem("number") : this.checkItem("number");
+  }
 
-    this.updateChecklist = function() {
-      this.result["length"] ? this.checkItem("length") : this.uncheckItem("length")
-      this.result["lower"] ? this.checkItem("lower") : this.uncheckItem("lower")
-      this.result["upper"] ? this.checkItem("upper") : this.uncheckItem("upper")
-      this.result["number"] ? this.checkItem("number") : this.uncheckItem("number")
-    }
+  this.checkItem = (id) => {
+    const icon = $(`#${id}-icon`);
+    icon.addClass("completed-icon");
+    const text = $(`#${id}-text`);
+    text.addClass("completed-text");
+  }
 
-    this.checkItem = function(id) {
-      const icon = $(`#${id}-icon`);
-      icon.addClass("completed-icon");
-      const text = $(`#${id}-text`);
-      text.addClass("completed-text");
-    }
+  this.uncheckItem = (id) => {
+    const icon = $(`#${id}-icon`);
+    icon.removeClass("completed-icon");
+    const text = $(`#${id}-text`);
+    text.removeClass("completed-text");
+  }
 
-    this.uncheckItem = function(id) {
-      const icon = $(`#${id}-icon`);
-      icon.removeClass("completed-icon");
-      const text = $(`#${id}-text`);
-      text.removeClass("completed-text");
-    }
-
-    this.updateSubmitStatus = function() {
-      const button = $("#password-submit");
-      const allPass = Object.values(this.result).every(item => item === true);
-      if (allPass) {
-        button.removeAttr("disabled");
-      } else {
-        button.attr("disabled", true);
-      }
+  this.updateSubmitStatus = (response) => {
+    const button = $("#password-submit");
+    if (response.length === 0) {
+      button.removeAttr("disabled");
+    } else {
+      button.attr("disabled", true);
     }
   }
 }

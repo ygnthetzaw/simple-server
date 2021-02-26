@@ -16,12 +16,12 @@ class EmailAuthentication < ApplicationRecord
     length: {in: Devise.password_length, message: "must be between 10 and 128 characters"},
     allow_nil: true
   validates :password,
-    format: {with: /(?=.*[a-z])/, message: "must contain at least one lower case letter"},
+    format: {with: /(?=.*[a-z])/, error: :needs_lower, message: "must contain at least one lower case letter"},
     allow_nil: true
   validates :password,
-    format: {with: /(?=.*[A-Z])/, message: "must contain at least one upper case letter"},
+    format: {with: /(?=.*[A-Z])/, error: :needs_upper, message: "must contain at least one upper case letter"},
     allow_nil: true
   validates :password,
-    format: {with: /(?=.*\d)/, message: "must contain at least one number"},
+    format: {with: /(?=.*\d)/, error: :needs_number, message: "must contain at least one number"},
     allow_nil: true
 end
