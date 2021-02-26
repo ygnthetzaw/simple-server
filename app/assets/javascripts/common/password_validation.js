@@ -34,7 +34,6 @@ PasswordValidation = function() {
       if (status === "success") {
         response = data["errors"]
       }
-      console.log(data["errors"])
       this.updateChecklist(response);
       this.updateSubmitStatus(response);
     });
@@ -48,17 +47,13 @@ PasswordValidation = function() {
   }
 
   this.checkItem = (id) => {
-    const icon = $(`#${id}-icon`);
-    icon.addClass("completed-icon");
-    const text = $(`#${id}-text`);
-    text.addClass("completed-text");
+    const text = $(`#${id}`);
+    text.addClass("completed");
   }
 
   this.uncheckItem = (id) => {
-    const icon = $(`#${id}-icon`);
-    icon.removeClass("completed-icon");
-    const text = $(`#${id}-text`);
-    text.removeClass("completed-text");
+    const text = $(`#${id}`);
+    text.removeClass("completed");
   }
 
   this.updateSubmitStatus = (response) => {

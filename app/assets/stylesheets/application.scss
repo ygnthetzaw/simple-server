@@ -667,18 +667,17 @@ span.inactive {
 		margin-bottom: 4px;
 	}
 
-	.completed-text {
+	.completed {
 		color: black;
+		i {
+			color: $green-dark
+		}
 	}
 
 	.fa-check-circle {
 		height: 16px;
 		margin-right: 8px;
 		width: 16px;
-	}
-
-	.completed-icon {
-		color: $green-dark;
 	}
 }
 
