@@ -37,16 +37,5 @@
     validator.initialize();
   </script>
 <% else %>
-  <body class="error-body">
-    <div class="dialog">
-      <div style="padding-bottom: 2em;">
-        <img src="http://simple.org/images/simple-wordmark-standard.svg">
-        <h1>Reset link expired</h1>
-        <p>
-          The password link expired. <%= link_to "Click here", new_email_authentication_password_path %> to request a new link.
-        </p>
-      </div>
-      <%= link_to "RETURN HOME", "/" %>
-    </div>
-  </body>
+  <%= render partial: "expired_reset_token" %>
 <% end %>
