@@ -243,4 +243,12 @@ class Patient < ApplicationRecord
     teleconsultations.discard_all
     discard
   end
+
+  def flipper_id
+    "Patient;#{id}"
+  end
+
+  def feature_enabled?(name)
+    Flipper.enabled?(name, self)
+  end
 end
