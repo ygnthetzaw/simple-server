@@ -42,11 +42,6 @@ class Appointment < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
-  def self.upcoming
-    where(status: "scheduled")
-      .where(scheduled_date: Date.current.beginning_of_day..(Date.current + 30.days).end_of_day)
-  end
-
   def self.all_overdue
     where(status: "scheduled")
       .where(arel_table[:scheduled_date].lt(Date.current))
