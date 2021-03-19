@@ -13,8 +13,7 @@ end
 
 desc "start a new experiment on inactive patients"
 task :start_inactive_patients_experiment, [:id, :max_patients] => :environment do |_t, args|
-  id = args[:id]
-  max_patients = args[:max_patients]
-  ExperimentControls.start_inactive_patient_experiment
+  max = Integer(args[:max_patients])
+  ExperimentControls.start_inactive_patient_experiment(args[:id], max)
 end
 
