@@ -27,7 +27,13 @@ module ExperimentControls
       schedule_patients = eligible_patients.take(10_000)
       break if schedule_patients.empty?
       schedule_patients.each do |patient|
-        #schedule reminders
+        AppointmentReminder.new(
+          appointment_id: patient.appointments.last&.id,
+          experiment_id: experiment.id,
+          experiment_group: experiment.bucket_for_patient(patient.id),
+          status: "scheduled",
+          remind_on: date
+        )
       end
     end
   end
