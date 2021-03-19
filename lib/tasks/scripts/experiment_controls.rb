@@ -35,6 +35,7 @@ module ExperimentControls
           remind_on: date
         )
       end
+      date = date += 1.day
     end
   end
 
