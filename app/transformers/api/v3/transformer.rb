@@ -1,7 +1,19 @@
 class Api::V3::Transformer
   class << self
+    def point_to_deduped_record(attributes)
+      # NOTE: Move this to a different layer when this becomes more complex
+      deduped_record = DedupLog.find_by_old_record_id(attributes["id"])&.deduped_record
+      deduped_patient = DedupLog.find_by_old_record_id(attributes["patient_id"])&.deduped_record
+      return attributes unless deduped_record || deduped_patient
+
+      attributes["id"] = deduped_record.id if deduped_record.present?
+      attributes["patient_id"] = deduped_patient.id if deduped_patient.present? && attributes["patient_id"].present?
+      attributes
+    end
+
     def from_request(payload_attributes)
       rename_attributes(payload_attributes, from_request_key_mapping)
+        .then { |attributes| point_to_deduped_record(attributes) }
     end
 
     def to_response(model)
