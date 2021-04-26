@@ -143,7 +143,8 @@ class Reports::RegionsController < AdminController
       {
         id: facility.id,
         name: facility.name,
-        type: facility.facility_type
+        type: facility.facility_type,
+        block: facility.block
       }.with_indifferent_access
     }
 

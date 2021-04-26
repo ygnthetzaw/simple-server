@@ -3,6 +3,7 @@
 <% csv << ["#{@region.name} #{@period.adjective} Cohort Report"] %>
 <% csv << ['Facility', 'Facility type'].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
   [
+    'Block',
     'Cohort period',
     'Follow up period',
     'Patients in cohort',
@@ -19,6 +20,7 @@ end) %>
 <% csv << [] %>
 <% @facility_keys.each do |facility| %>
 <% csv << [facility[:name], facility[:type]].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
+  block = facility[:block]
   cohort_start, report_start = report_dates
   registered = analytics.dig(:cohort_patients, facility[:id]) || 0
   followed_up = analytics.dig(:followed_up, facility[:id]) || 0
@@ -43,6 +45,7 @@ end) %>
   end
 
   [
+    block,
     cohort_period,
     report_period,
     registered,
