@@ -63,11 +63,14 @@ end) %>
 <% csv << [] %>
 <% csv << ["#{@region.facilities.first.district} Facilites Report"] %>
 <%
+  dates = dates_for_periods(@period.type, 3, include_current_period: @show_current_period)
+  end_date = (dates.last + 1.month).end_of_month.strftime("%b %-d")
   headers = [
     "Facility name",
     "Facility type",
     "Block",
-    "Total registered patients"
+    "Total registered patients",
+    "Patients under care till #{end_date}"
   ]
   dates = dates_for_periods(@period.type, 3, include_current_period: @show_current_period)
   ["Follow up patients", "Registered patients"].each do |metric|
@@ -82,6 +85,7 @@ end) %>
     nil,
     nil,
     @dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 },
+    @facility_data.sum { |facility| facility.dig(:adjusted_patient_counts, @period) },
     *dates.map { |period| analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period) },
     *dates.map { |period| analytics_totals(@dashboard_analytics, :registered_patients_by_period, period) }
   ]
@@ -93,6 +97,7 @@ end) %>
         facility.facility_type,
         @facility_keys.find {|f| f[:id] == facility.id}&.dig(:block),
         @dashboard_analytics.dig(facility.id, :total_registered_patients) || 0,
+        @facility_data.find{ |fac| fac[:region].id == facility.id }&.dig(:adjusted_patient_counts, @period) || 0,
         *dates.map { |period| @dashboard_analytics.dig(facility.id, :follow_up_patients_by_period, period) || 0 },
         *dates.map { |period| @dashboard_analytics.dig(facility.id, :registered_patients_by_period, period) || 0 }
       ] %>
