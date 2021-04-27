@@ -90,13 +90,20 @@ class Reports::RegionsController < AdminController
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
     if @region.district_region?
+      repo = Reports::Repository.new(@region, periods: @period)
+      @district_data = {
+        region: @region,
+        adjusted_patient_counts: repo.adjusted_patient_counts[@region.slug],
+        controlled_patients_rate: repo.controlled_patients_rate[@region.slug],
+      }
       children = @region.facilities.where(id: [@dashboard_analytics.keys])
       repo = Reports::Repository.new(children, periods: @period)
-      @facility_data = children.map { |region|
-        slug = region.slug
+      @facility_data = children.map { |facility|
+        slug = facility.slug
         {
-          region: region,
+          region: facility,
           adjusted_patient_counts: repo.adjusted_patient_counts[slug],
+          controlled_patients_rate: repo.controlled_patients_rate[slug],
         }
       }
     end
