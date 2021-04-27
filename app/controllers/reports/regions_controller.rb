@@ -89,15 +89,17 @@ class Reports::RegionsController < AdminController
     @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
-    children = @region.facilities.where(id: [@dashboard_analytics.keys])
-    repo = Reports::Repository.new(children, periods: @period)
-    @facility_data = children.map { |region|
-      slug = region.slug
-      {
-        region: region,
-        adjusted_patient_counts: repo.adjusted_patient_counts[slug],
+    if @region.district_region?
+      children = @region.facilities.where(id: [@dashboard_analytics.keys])
+      repo = Reports::Repository.new(children, periods: @period)
+      @facility_data = children.map { |region|
+        slug = region.slug
+        {
+          region: region,
+          adjusted_patient_counts: repo.adjusted_patient_counts[slug],
+        }
       }
-    }
+    end
 
     respond_to do |format|
       format.csv do
