@@ -257,15 +257,11 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do
-      travel_to now do
-        expect(subject.csv(Patient.all).to_s.strip).to eq((timestamp.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
-      end
+      expect(subject.csv(Patient.all).to_s.strip).to eq((timestamp.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
     end
 
     it "generates a blank CSV (only headers) if no patients exist" do
-      travel_to now do
-        expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
-      end
+      expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
     end
 
     it "does not include the zone column if the country config is set to false" do
