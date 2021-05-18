@@ -66,16 +66,17 @@ class ExperimentControlService
 
       experiment.selecting_state!
 
-      eligible_ids = medication_reminder_patients
-      return if eligible_ids.empty?
-      eligible_ids.shuffle!
+      eligible_ids = medication_reminder_patients(experiment)
+      if eligible_ids.any?
+        eligible_ids.shuffle!
 
-      daily_ids = eligible_ids.pop(patients_per_day)
-      daily_patients = Patient.where(id: daily_ids)
-      daily_patients.each do |patient|
-        group = experiment.random_treatment_group
-        schedule_reminders(patient, nil, group, Date.current)
-        group.patients << patient
+        daily_ids = eligible_ids.pop(patients_per_day)
+        daily_patients = Patient.where(id: daily_ids)
+        daily_patients.each do |patient|
+          group = experiment.random_treatment_group
+          schedule_reminders(patient, nil, group, Date.current)
+          group.patients << patient
+        end
       end
 
       experiment.running_state!
@@ -92,10 +93,15 @@ class ExperimentControlService
         .pluck(:id)
     end
 
-    def medication_reminder_patients
+    def medication_reminder_patients(experiment)
       Patient.with_hypertension
       .contactable
-      .where("NOT EXISTS (SELECT 1 FROM blood_pressures WHERE blood_pressures.patient_id = patients.id AND blood_pressures.device_created_at > ?)", 30.days.ago.beginning_of_day)
+      .includes(treatment_group_memberships: [treatment_group: [:experiment]])
+      .where("experiments.id IS NULL OR NOT EXISTS (SELECT 1 FROM experiments WHERE experiments.id = ?)", experiment.id).references(:experiment)
+      .where(
+        "NOT EXISTS (SELECT 1 FROM blood_pressures WHERE blood_pressures.patient_id = patients.id AND blood_pressures.device_created_at > ?)",
+        30.days.ago.beginning_of_day
+      )
       .distinct
       .pluck(:id)
     end
