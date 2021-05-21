@@ -38,12 +38,21 @@ RSpec.describe Experimentation::Experiment, type: :model do
   end
 
   describe "#random_treatment_group" do
-    it "returns a treatment group from the experiment" do
-      experiment1 = create(:experiment, :with_treatment_group)
-      experiment2 = create(:experiment, :with_treatment_group)
+    context "when treatment groups do not specify membership_perentages" do
+      it "returns a treatment group from the experiment" do
+        experiment = create(:experiment, :with_treatment_group)
 
-      expect(experiment1.random_treatment_group).to eq(experiment1.treatment_groups.first)
-      expect(experiment2.random_treatment_group).to eq(experiment2.treatment_groups.first)
+        expect(experiment.random_treatment_group).to eq(experiment.treatment_groups.first)
+      end
+    end
+
+    context "when treatment groups do specify membership_percentages" do
+      it "returns a treatment group from the experiment" do
+        experiment = create(:experiment)
+        treatment_group = create(:treatment_group, experiment: experiment, membership_percentage: 100)
+
+        expect(experiment.random_treatment_group).to eq(treatment_group)
+      end
     end
   end
 end

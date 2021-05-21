@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_18_212747) do
+ActiveRecord::Schema.define(version: 2021_05_21_160204) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -599,6 +599,7 @@ ActiveRecord::Schema.define(version: 2021_05_18_212747) do
     t.uuid "experiment_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "membership_percentage"
     t.index ["experiment_id"], name: "index_treatment_groups_on_experiment_id"
   end
 

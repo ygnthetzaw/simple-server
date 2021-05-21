@@ -30,7 +30,14 @@ module Experimentation
     end
 
     def random_treatment_group
-      treatment_groups.sample
+      if evenly_distributed_treatment_groups?
+        treatment_groups.sample
+      else
+        match = treatment_group_percentage_map.find do |(range, group)|
+          range.include?(rand(0..99))
+        end
+        match[1]
+      end
     end
 
     private
@@ -50,6 +57,21 @@ module Experimentation
       end
       if start_date > end_date
         errors.add(:date_range, "start date must precede end date")
+      end
+    end
+
+    # might be wise to memoize this given that we intend to use it on a large number of records
+    def evenly_distributed_treatment_groups?
+      treatment_groups.pluck(:membership_percentage).compact.empty?
+    end
+
+    def treatment_group_percentage_map
+      @treatment_group_percentage_map ||= begin
+        starting_percent = 0
+        percentages = treatment_groups.each_with_object({}) do |group, hsh|
+          range = Range.new(starting_percent, starting_percent + group.membership_percentage - 1)
+          hsh[range] = group
+        end
       end
     end
   end
