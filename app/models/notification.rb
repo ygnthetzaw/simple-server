@@ -23,26 +23,24 @@ class Notification < ApplicationRecord
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
   def localized_message
-    case subject
-    when Appointment
-      I18n.t(
+    if message.in? ["sms.appointment_reminders.missed_visit_whatsapp_reminder", "sms.appointment_reminders.missed_visit_sms_reminder"]
+      return I18n.t(
         message,
         facility_name: subject.facility.name,
         patient_name: patient.full_name,
         appointment_date: subject.scheduled_date,
         locale: subject.facility.locale
       )
-    when nil
-      # this is a temporary fix. we need to figure out a better way of making the message more flexible
-      I18n.t(
+    end
+    if message.start_with?("notifications.set")
+      return I18n.t(
         message,
         facility_name: patient.assigned_facility.name,
         patient_name: patient.full_name,
         locale: patient.assigned_facility.locale
       )
-    else
-      raise ArgumentError, "Must provide a subject or a default behavior for a notification"
     end
+    raise ArgumentError, "Must provide a subject or a default behavior for a notification"
   end
 
   def next_communication_type
