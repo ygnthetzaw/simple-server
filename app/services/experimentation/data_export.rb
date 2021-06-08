@@ -16,23 +16,45 @@ module Experimentation
     end
 
     def result
-      query.values
+      query.results
     end
 
     private
+
+=begin
+Experiment: id,
+Patient: gender, age, assigned_facility_id, recorded_at,
+TreatmentGroup: id, name
+Appointment: created_at, schedule_date
+TreatmentGroupMembership: id, creation date
+Notification: used to get all message types and statuses
+Medical history: patient risk level, diagnosed HTN,
+Facility (might get interesting): name, type, state, district, block,
+Assigned facility: name, type, state, district, block
+
+
+Patient visit date is the first "visit" after inclusion in experiment or maybe after notifications send
+Days to visit is ^ - first notification date
+BP recorded at visit: does the visit include a bp?
+Shouldn't "patient has phone number" be true for all?
+
+Prior visits
+Prior calls
+=end
+
     def query
       GitHub::SQL.new(<<~SQL, parameters)
         WITH experiment_subjects AS (
-          SELECT patients.id AS patient_id, patients.gender AS gender, treatment_groups.id AS treatment_group_id,
-          treatment_groups.description AS treatment_group_description
+          SELECT tgm.id AS patient_identifier, patients.gender AS gender, patients.age AS age,
+          tg.id AS treatment_group_id, tg.description AS treatment_group_description
           FROM patients
-          INNER JOIN treatment_group_memberships ON treatment_group_memberships.patient_id = patients.id
-          INNER JOIN treatment_groups ON treatment_groups.id = treatment_group_memberships.treatment_group_id
-          INNER JOIN experiments ON experiments.id = treatment_groups.experiment_id
+          INNER JOIN treatment_group_memberships tgm ON tgm.patient_id = patients.id
+          INNER JOIN treatment_groups tg ON tg.id = tgm.treatment_group_id
+          INNER JOIN experiments ON experiments.id = tg.experiment_id
           WHERE experiments.id = :experiment_id
         )
         SELECT
-          experiment_subjects.patient_id,
+          experiment_subjects.patient_identifier,
           experiment_subjects.gender,
           experiment_subjects.treatment_group_id,
           experiment_subjects.treatment_group_description
