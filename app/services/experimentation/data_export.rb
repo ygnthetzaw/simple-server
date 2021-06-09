@@ -57,13 +57,20 @@ Prior calls
           LEFT OUTER JOIN facilities f ON p.assigned_facility_id = f.id
           WHERE experiments.id = :experiment_id
         ),
-        followup_visit_date AS (
-            SELECT date_trunc('day', coalesce(bp.recorded_at, bs.recorded_at, a.device_created_at, pd.device_created_at)) visit_date
+        followup_visit AS (
+            SELECT subject_data.patient_id patient_id,
+            date_trunc('day', coalesce(bp.recorded_at, bs.recorded_at, a.device_created_at, pd.device_created_at)) visit_date,
+            (date_trunc('day', coalesce(bp.recorded_at, bs.recorded_at, a.device_created_at, pd.device_created_at)) - subject_data.inclusion_date) days_til_visit
             FROM subject_data
             LEFT OUTER JOIN blood_pressures bp ON bp.patient_id = subject_data.patient_id AND bp.recorded_at > subject_data.inclusion_date
             LEFT OUTER JOIN blood_sugars bs ON bs.patient_id = subject_data.patient_id AND bs.recorded_at > subject_data.inclusion_date
             LEFT OUTER JOIN appointments a ON a.patient_id = subject_data.patient_id AND a.device_created_at > subject_data.inclusion_date
             LEFT OUTER JOIN prescription_drugs pd ON pd.patient_id = subject_data.patient_id AND pd.device_created_at > subject_data.inclusion_date
+        ),
+        bp_recorded_at_visit AS (
+          SELECT 1
+          FROM followup_visit
+          LEFT OUTER JOIN blood_pressures bp ON bp.patient_id = followup_visit.patient_id AND bp.recorded_at > visit_date
         ),
         appointment AS (
           SELECT a.created_at, a.scheduled_date
