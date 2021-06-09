@@ -44,21 +44,33 @@ Prior calls
 
     def query
       GitHub::SQL.new(<<~SQL, parameters)
-        WITH experiment_subjects AS (
-          SELECT tgm.id AS patient_identifier, patients.gender AS gender, patients.age AS age,
-          tg.id AS treatment_group_id, tg.description AS treatment_group_description
-          FROM patients
-          INNER JOIN treatment_group_memberships tgm ON tgm.patient_id = patients.id
+        WITH subject_data AS (
+          SELECT tgm.id patient_identifier, tgm.created_at inclusion_date, p.gender gender, p.age age, p.recorded_at registration_date,
+          tg.id treatment_group_id, tg.description treatment_group_description,
+          f.name assigned_facility_name, f.facility_type assigned_facility_type, f.state assigned_state,
+          f.district assigned_district, mh.diagnosed_with_hypertension hypertensive
+          FROM patients p
+          INNER JOIN treatment_group_memberships tgm ON tgm.patient_id = p.id
           INNER JOIN treatment_groups tg ON tg.id = tgm.treatment_group_id
           INNER JOIN experiments ON experiments.id = tg.experiment_id
+          INNER JOIN medical_histories mh ON mh.patient_id = p.id
+          LEFT JOIN facilities f ON p.assigned_facility_id = f.id
           WHERE experiments.id = :experiment_id
         )
         SELECT
-          experiment_subjects.patient_identifier,
-          experiment_subjects.gender,
-          experiment_subjects.treatment_group_id,
-          experiment_subjects.treatment_group_description
-        FROM experiment_subjects
+          :experiment_id experiment_id,
+          subject_data.patient_identifier,
+          subject_data.inclusion_date,
+          subject_data.gender,
+          subject_data.age,
+          subject_data.registration_date,
+          subject_data.treatment_group_id,
+          subject_data.treatment_group_description,
+          subject_data.assigned_facility_name,
+          subject_data.assigned_facility_type,
+          subject_data.assigned_state,
+          subject_data.assigned_district
+        FROM subject_data
       SQL
     end
 
