@@ -45,7 +45,7 @@ Prior calls
     def query
       GitHub::SQL.new(<<~SQL, parameters)
         WITH subject_data AS (
-          SELECT tgm.id patient_identifier, tgm.created_at inclusion_date, p.gender gender, p.age age, p.recorded_at registration_date,
+          SELECT p.id patient_id, tgm.id patient_identifier, tgm.created_at inclusion_date, p.gender gender, p.age age, p.recorded_at registration_date,
           tg.id treatment_group_id, tg.description treatment_group_description,
           f.name assigned_facility_name, f.facility_type assigned_facility_type, f.state assigned_state,
           f.district assigned_district, mh.diagnosed_with_hypertension hypertensive
@@ -54,8 +54,23 @@ Prior calls
           INNER JOIN treatment_groups tg ON tg.id = tgm.treatment_group_id
           INNER JOIN experiments ON experiments.id = tg.experiment_id
           INNER JOIN medical_histories mh ON mh.patient_id = p.id
-          LEFT JOIN facilities f ON p.assigned_facility_id = f.id
+          LEFT OUTER JOIN facilities f ON p.assigned_facility_id = f.id
           WHERE experiments.id = :experiment_id
+        ),
+        followup_visit_date AS (
+            SELECT date_trunc('day', coalesce(bp.recorded_at, bs.recorded_at, a.device_created_at, pd.device_created_at)) visit_date
+            FROM subject_data
+            LEFT OUTER JOIN blood_pressures bp ON bp.patient_id = subject_data.patient_id AND bp.recorded_at > subject_data.inclusion_date
+            LEFT OUTER JOIN blood_sugars bs ON bs.patient_id = subject_data.patient_id AND bs.recorded_at > subject_data.inclusion_date
+            LEFT OUTER JOIN appointments a ON a.patient_id = subject_data.patient_id AND a.device_created_at > subject_data.inclusion_date
+            LEFT OUTER JOIN prescription_drugs pd ON pd.patient_id = subject_data.patient_id AND pd.device_created_at > subject_data.inclusion_date
+        ),
+        appointment AS (
+          SELECT a.created_at, a.scheduled_date
+          FROM subject_data
+          LEFT OUTER JOIN appointments a ON a.patient_id = subject_data.patient_id AND a.created_at < subject_data.inclusion_date
+          ORDER BY a.created_at DESC
+          LIMIT 1
         )
         SELECT
           :experiment_id experiment_id,
