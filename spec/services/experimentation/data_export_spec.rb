@@ -10,7 +10,7 @@ RSpec.describe Experimentation::DataExport, type: :model do
 
     context "when experiment is found" do
       before :each do
-        @experiment = create(:experiment)
+        @experiment = create(:experiment, start_date: 2.weeks.ago, end_date: 1.week.ago)
         @treatment_group1 = create(:treatment_group, experiment: @experiment, description: "Has reminder templates")
         @treatment_group2 = create(:treatment_group, experiment: @experiment, description: "Control")
         @reminder_template1 = create(:reminder_template, treatment_group: @treatment_group1, remind_on_in_days: -3)
@@ -18,14 +18,19 @@ RSpec.describe Experimentation::DataExport, type: :model do
         @reminder_template3 = create(:reminder_template, treatment_group: @treatment_group1, remind_on_in_days: 3)
         @patient1 = create(:patient)
         @patient2 = create(:patient)
-        @treatment_group1.patients << @patient1
-        @treatment_group2.patients << @patient2
+        Timecop.freeze(2.weeks.ago) do
+          @treatment_group1.patients << @patient1
+          @treatment_group2.patients << @patient2
+        end
+        create(:encounter, encountered_on: 1.week.ago, patient: @patient1)
+        create(:encounter, encountered_on: 1.day.ago, patient: @patient1)
       end
 
 
       it "includes one row per patient" do
         exporter = described_class.new(@experiment.name)
         results = exporter.result
+        puts results
         expect(results.length).to eq(2)
       end
     end
