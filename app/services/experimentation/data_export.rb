@@ -45,17 +45,22 @@ Prior calls
     def query
       GitHub::SQL.new(<<~SQL, parameters)
         WITH subject_data AS (
-          SELECT p.id patient_id, tgm.id patient_identifier, tgm.created_at inclusion_date, p.gender gender, p.age age, p.recorded_at registration_date,
-          tg.id treatment_group_id, tg.description treatment_group_description,
-          f.name assigned_facility_name, f.facility_type assigned_facility_type, f.state assigned_state,
-          f.district assigned_district, mh.diagnosed_with_hypertension hypertensive
-          FROM patients p
-          INNER JOIN treatment_group_memberships tgm ON tgm.patient_id = p.id
-          INNER JOIN treatment_groups tg ON tg.id = tgm.treatment_group_id
-          INNER JOIN experiments ON experiments.id = tg.experiment_id
-          INNER JOIN medical_histories mh ON mh.patient_id = p.id
-          LEFT OUTER JOIN facilities f ON p.assigned_facility_id = f.id
-          WHERE experiments.id = :experiment_id
+        SELECT p.id patient_id, tgm.id patient_identifier, tgm.created_at inclusion_date, p.gender gender, p.age age, p.recorded_at registration_date,
+        tg.id treatment_group_id, tg.description treatment_group_description,
+        f.name assigned_facility_name, f.facility_type assigned_facility_type, f.state assigned_state,
+        f.district assigned_district, mh.diagnosed_with_hypertension hypertensive,
+        date_trunc('day', coalesce(bp.recorded_at, bs.recorded_at, a.device_created_at, pd.device_created_at)) visit_date
+        FROM patients p
+        INNER JOIN treatment_group_memberships tgm ON tgm.patient_id = p.id
+        INNER JOIN treatment_groups tg ON tg.id = tgm.treatment_group_id
+        INNER JOIN experiments ON experiments.id = tg.experiment_id
+        INNER JOIN medical_histories mh ON mh.patient_id = p.id
+        LEFT OUTER JOIN facilities f ON p.assigned_facility_id = f.id
+        LEFT OUTER JOIN blood_pressures bp ON bp.patient_id = p.id AND bp.recorded_at > tgm.created_at
+        LEFT OUTER JOIN blood_sugars bs ON bs.patient_id = p.id AND bs.recorded_at > tgm.created_at
+        LEFT OUTER JOIN appointments a ON a.patient_id = p.id AND a.device_created_at > tgm.created_at
+        LEFT OUTER JOIN prescription_drugs pd ON pd.patient_id = p.id AND pd.device_created_at > tgm.created_at
+        WHERE experiments.id = :experiment_id
         ),
         followup_visit AS (
             SELECT subject_data.patient_id patient_id,
