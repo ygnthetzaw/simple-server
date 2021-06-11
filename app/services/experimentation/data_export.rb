@@ -44,7 +44,9 @@ Prior calls
 Problems: 
 - need a way of finding just the first visit. It'll also be interesting to find out if notifications were properly cancelled after they came in. This was all dependent on something the android team said.
 - need to figure out the visit facility
-- appointment should be based on appointment facility
+- appointment needs to be calculated differently for the different experiment types.
+  - active patient: first appt after experiment inclusion date
+  - stale patient: last appt before experiment inclusion date
 
 QUESTIONS:
 - should follow up visit date always be their next visit after inclusion?
@@ -115,12 +117,24 @@ QUESTIONS:
           SELECT greatest(e.encountered_on, pd.device_created_at, app.device_created_at) AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as_date
         ) visited_at ON true
         LEFT JOIN LATERAL (
+          SELECT facilities.id, facilities.name, facilities.facility_type, facilities.state
+          FROM facilities
+          WHERE facilities.id = (
+            CASE
+              WHEN e.encountered_on = visited_at.as_date THEN e.facility_id
+              WHEN pd.device_created_at = visited_at.as_date THEN pd.facility_id
+              WHEN app.device_created_at = visited_at.as_date THEN app.facility_id
+              ELSE NULL
+            END
+          )
+        ) visited_facility ON TRUE
+        LEFT JOIN LATERAL (
           SELECT a.scheduled_date
-          FROM appointments
+          FROM appointments a
           WHERE a.patient_id = subject_data.patient_id AND a.created_at < subject_data.inclusion_date
           ORDER BY a.created_at DESC
           LIMIT 1
-        ) previous_appointment_date
+        ) previous_appointment_date on TRUE
       SQL
     end
 
