@@ -58,7 +58,7 @@ class MyFacilities::DrugStocksController < AdminController
 
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     render && return if @facilities.empty?
-    @query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
+    @query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month, facility_group: @selected_facility_group)
     @drugs_by_category = @query.protocol_drugs_by_category
   end
 
