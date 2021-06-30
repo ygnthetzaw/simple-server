@@ -64,11 +64,13 @@ RSpec.describe NotificationService do
       notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
     end
 
-    it "captures exceptions in Sentry and sets 'error' to the exception" do
-      expect(Sentry).to receive(:capture_message)
-      notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
-      expect(notification_service.error.class).to eq(Twilio::REST::RestError)
-      expect(notification_service.response).to eq(nil)
+    it "raises a custom error on twilio error" do
+      stub_client
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
+
+      expect{
+        notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
+      }.to raise_error(NotificationService::Error)
     end
   end
 
@@ -86,26 +88,13 @@ RSpec.describe NotificationService do
       notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
     end
 
-    it "captures errors in Sentry and sets 'error' to the exception" do
-      expect(Sentry).to receive(:capture_message)
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      expect(notification_service.error.class).to eq(Twilio::REST::RestError)
-      expect(notification_service.response).to eq(nil)
-    end
-  end
-
-  describe "#failed?" do
-    it "is false when no error has been raised" do
-      expect(notification_service.failed?).to be_falsey
+    it "raises a custom error on twilio error" do
       stub_client
-      allow(twilio_client).to receive_message_chain("messages.create")
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      expect(notification_service.failed?).to be_falsey
-    end
+      allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
 
-    it "is true when twilio raises an error" do
-      notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      expect(notification_service.failed?).to be_truthy
+      expect{
+        notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
+      }.to raise_error(NotificationService::Error)
     end
   end
 
