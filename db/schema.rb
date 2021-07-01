@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_22_191111) do
+ActiveRecord::Schema.define(version: 2021_06_28_154848) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -159,8 +159,7 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.index ["deduped_record_id", "deleted_at"], name: "index_deduplication_records_lookup"
-    t.index ["deleted_at", "deleted_record_id"], name: "idx_deduplication_logs_lookup_tmp"
+    t.index ["deleted_at", "deleted_record_id"], name: "idx_deduplication_logs_lookup_deleted_at"
     t.index ["record_type", "deleted_record_id"], name: "idx_deduplication_logs_lookup_deleted_record", unique: true
     t.index ["user_id"], name: "index_deduplication_logs_on_user_id"
   end
@@ -386,6 +385,7 @@ ActiveRecord::Schema.define(version: 2021_06_22_191111) do
     t.datetime "updated_at", null: false
     t.string "subject_type"
     t.uuid "subject_id"
+    t.string "purpose", null: false
     t.index ["experiment_id"], name: "index_notifications_on_experiment_id"
     t.index ["patient_id"], name: "index_notifications_on_patient_id"
     t.index ["reminder_template_id"], name: "index_notifications_on_reminder_template_id"
