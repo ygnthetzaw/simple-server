@@ -180,7 +180,10 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "does not create a communication or update notification status if an error is received from twilio" do
       expect {
         described_class.perform_async(notification.id)
-        described_class.drain
+        begin
+          described_class.drain
+        rescue NotificationService::Error
+        end
       }.not_to change { Communication.count }
       expect(notification.reload.status).to eq("scheduled")
     end

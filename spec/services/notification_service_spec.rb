@@ -68,7 +68,7 @@ RSpec.describe NotificationService do
       stub_client
       allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
 
-      expect{
+      expect {
         notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
       }.to raise_error(NotificationService::Error)
     end
@@ -92,7 +92,7 @@ RSpec.describe NotificationService do
       stub_client
       allow(twilio_client).to receive_message_chain("messages.create").and_raise(Twilio::REST::TwilioError)
 
-      expect{
+      expect {
         notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
       }.to raise_error(NotificationService::Error)
     end

@@ -67,20 +67,6 @@ class AppointmentNotification::Worker
       raise UnknownCommunicationType, "#{self.class.name} is not configured to handle communication type #{communication_type}"
     end
 
-    log_info = {
-      class: self.class.name,
-      msg: "send_message",
-      failed: !!notification_service.failed?,
-      error: notification_service.error,
-      sender: medication_reminder_sms_sender || "default",
-      communication_type: communication_type,
-      notification_id: notification.id
-    }
-
-    logger.info log_info
-
-    return if notification_service.failed?
-
     ActiveRecord::Base.transaction do
       create_communication(notification, communication_type, notification_service.response)
       notification.status_sent!
