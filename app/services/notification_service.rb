@@ -1,4 +1,4 @@
-class NotificationService
+class TwilioService
   attr_reader :client
   attr_reader :response
   attr_reader :twilio_sender_sms_number

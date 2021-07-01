@@ -39,9 +39,9 @@ class AppointmentNotification::Worker
 
   def send_message(notification, communication_type)
     notification_service = if notification.experiment&.experiment_type == "medication_reminder" && medication_reminder_sms_sender
-      NotificationService.new(sms_sender: medication_reminder_sms_sender)
+      TwilioService.new(sms_sender: medication_reminder_sms_sender)
     else
-      NotificationService.new
+      TwilioService.new
     end
 
     # remove missed_visit_whatsapp_reminder and missed_visit_sms_reminder

@@ -41,7 +41,7 @@ class MessagePatients
       phone_number = phone_number_for(patient)
 
       next unless phone_number
-      notification_service = NotificationService.new
+      notification_service = TwilioService.new
       if whatsapp?
         notification_service.send_whatsapp(phone_number, message)
       elsif sms?
