@@ -1,12 +1,12 @@
 require "rails_helper"
 
-RSpec.describe TwilioService do
+RSpec.describe TwilioApiService do
   let(:twilio_client) { double("TwilioClientDouble") }
   let(:fake_callback_url) { "http://localhost/callback" }
   let(:sender_sms_phone_number) { described_class::TWILIO_TEST_SMS_NUMBER }
   let(:sender_whatsapp_phone_number) { described_class::TWILIO_TEST_WHATSAPP_NUMBER }
 
-  subject(:notification_service) { TwilioService.new }
+  subject(:notification_service) { TwilioApiService.new }
   let(:recipient_phone_number) { "8585858585" }
   let(:expected_sms_recipient_phone_number) { "+918585858585" }
 
@@ -36,13 +36,13 @@ RSpec.describe TwilioService do
   describe "specifying an SMS sender" do
     it "uses the provided SMS sender number in production" do
       stub_const("SIMPLE_SERVER_ENV", "production")
-      notification_service = TwilioService.new(sms_sender: "1234567890")
+      notification_service = TwilioApiService.new(sms_sender: "1234567890")
       expect(notification_service.twilio_sender_sms_number).to eq("1234567890")
     end
 
     it "uses the test number in test environments" do
-      notification_service = TwilioService.new(sms_sender: "1234567890")
-      expect(notification_service.twilio_sender_sms_number).to eq(TwilioService::TWILIO_TEST_SMS_NUMBER)
+      notification_service = TwilioApiService.new(sms_sender: "1234567890")
+      expect(notification_service.twilio_sender_sms_number).to eq(TwilioApiService::TWILIO_TEST_SMS_NUMBER)
     end
 
     it "uses the primary number when no explicit sender is specified" do
@@ -70,7 +70,7 @@ RSpec.describe TwilioService do
 
       expect {
         notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
-      }.to raise_error(TwilioService::Error)
+      }.to raise_error(TwilioApiService::Error)
     end
   end
 
@@ -94,7 +94,7 @@ RSpec.describe TwilioService do
 
       expect {
         notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      }.to raise_error(TwilioService::Error)
+      }.to raise_error(TwilioApiService::Error)
     end
   end
 
