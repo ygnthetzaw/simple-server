@@ -114,7 +114,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         notification: notification,
         twilio_sid: "12345",
         twilio_msg_status: "sent",
-        communication_type: "sms"
+        communication_type: :sms
       ).and_call_original
       expect {
         described_class.perform_async(notification.id)
@@ -177,7 +177,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         context: {
           calling_class: "AppointmentNotification::Worker",
           notification_id: notification.id,
-          communication_type: "sms"
+          communication_type: :sms
         }
       )
       described_class.perform_async(notification.id)
