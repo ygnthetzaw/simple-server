@@ -1,8 +1,5 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  if ENV["ANDROID_REVIEW_APP"]
-    Dotenv.overload(".env.android_review")
-  end
 
   # Set correct host name dynamically in Heroku Review Apps
   if ENV["HEROKU_APP_NAME"].present?
