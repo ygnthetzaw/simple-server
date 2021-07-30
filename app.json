@@ -10,6 +10,66 @@
     "postdeploy": "./bin/heroku-setup"
   },
   "env": {
+    "EXOTEL_TOKEN": {
+      "description": "EXOTEL_TOKEN",
+      "value": "fake_EXOTEL_TOKEN"
+    },
+    "SEED_GENERATED_ACTIVE_USER_ROLE": {
+      "description": "SEED_GENERATED_ACTIVE_USER_ROLE",
+      "value": "fake_SEED_GENERATED_ACTIVE_USER_ROLE"
+    },
+    "SEED_GENERATED_ADMIN_PASSWORD": {
+      "description": "SEED_GENERATED_ADMIN_PASSWORD",
+      "value": "fake_SEED_GENERATED_ADMIN_PASSWORD"
+    },
+    "SEED_GENERATED_INACTIVE_USER_ROLE": {
+      "description": "SEED_GENERATED_INACTIVE_USER_ROLE",
+      "value": "fake_SEED_GENERATED_INACTIVE_USER_ROLE"
+    },
+    "SENDGRID_PASSWORD": {
+      "description": "SENDGRID_PASSWORD",
+      "value": "fake_SENDGRID_PASSWORD"
+    },
+    "SENDGRID_USERNAME": {
+      "description": "SENDGRID_USERNAME",
+      "value": "fake_SENDGRID_USERNAME"
+    },
+    "SENTRY_DSN": {
+      "description": "SENTRY_DSN",
+      "value": "fake_SENTRY_DSN"
+    },
+    "SENTRY_SECURITY_HEADER_ENDPOINT": {
+      "description": "SENTRY_SECURITY_HEADER_ENDPOINT",
+      "value": "fake_SENTRY_SECURITY_HEADER_ENDPOINT"
+    },
+    "SIMPLE_APP_SIGNATURE": {
+      "description": "SIMPLE_APP_SIGNATURE",
+      "value": "fake_SIMPLE_APP_SIGNATURE"
+    },
+    "TWILIO_ACCOUNT_SID": {
+      "description": "TWILIO_ACCOUNT_SID",
+      "value": "fake_TWILIO_ACCOUNT_SID"
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "description": "TWILIO_AUTH_TOKEN",
+      "value": "fake_TWILIO_AUTH_TOKEN"
+    },
+    "TWILIO_PHONE_NUMBER": {
+      "description": "TWILIO_PHONE_NUMBER",
+      "value": "fake_TWILIO_PHONE_NUMBER"
+    },
+    "TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN": {
+      "description": "TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN",
+      "value": "fake_TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN"
+    },
+    "TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER": {
+      "description": "TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER",
+      "value": "fake_TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER"
+    },
+    "TWILIO_REMINDERS_ACCOUNT_SID": {
+      "description": "TWILIO_REMINDERS_ACCOUNT_SID",
+      "value": "fake_TWILIO_REMINDERS_ACCOUNT_SID"
+    },
     "SECRET_KEY_BASE": {
       "description": "A secret key for verifying the integrity of signed cookies.",
       "generator": "secret"
