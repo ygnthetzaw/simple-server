@@ -16,6 +16,10 @@ require "view_component/engine"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+if ENV["ANDROID_REVIEW_APP"]
+  Dotenv.overload(".env.android_review")
+end
+
 module SimpleServer
   class Application < Rails::Application
     # Set our "app environment" as early as possible here
