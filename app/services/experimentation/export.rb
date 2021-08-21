@@ -34,6 +34,7 @@ module Experimentation
     def aggregate_data
       experiment.treatment_groups.each do |group|
         group.patients.each do |patient|
+          binding.pry if patient.id == "0001d820-0b83-4ca9-b337-567a8f808f3c"
           tgm = patient.treatment_group_memberships.find_by(treatment_group_id: group.id)
           notifications = patient.notifications.where(experiment_id: experiment.id).order(:remind_on)
           assigned_facility = patient.assigned_facility
@@ -47,7 +48,7 @@ module Experimentation
             "Communications" => experimental_communications(notifications),
             "Patient Gender" => patient.gender,
             "Patient Age" => patient.age,
-            "Patient Risk Level" => patient.risk_priority,
+            "Patient Risk Level" => patient.high_risk? ? "High" : "Normal",
             "Assigned Facility Name" => assigned_facility&.name,
             "Assigned Facility Type" => assigned_facility&.facility_type,
             "Assigned Facility State" => assigned_facility&.state,
