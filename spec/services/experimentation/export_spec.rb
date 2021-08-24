@@ -41,6 +41,7 @@ RSpec.describe Experimentation::Export, type: :model do
     @control_appt_2 = create(:appointment, patient: @control_patient, scheduled_date: second_week_of_experiment, device_created_at: week_before_experiment, facility: @facility_1)
     @control_past_visit_1 = create(:blood_pressure, :hypertensive, patient: @control_patient, device_created_at: experiment_start_date - 8.months, facility: @facility_1)
     @control_past_visit_2 = create(:blood_pressure, :hypertensive, patient: @control_patient, device_created_at: experiment_start_date - 3.months, facility: @facility_1)
+    _control_duplicate_past_visit = create(:blood_pressure, :hypertensive, patient: @control_patient, device_created_at: experiment_start_date - 3.months, facility: @facility_1)
 
     @single_message_patient = create(:patient, assigned_facility: @facility_2, age: 70, gender: "male", device_created_at: one_year_ago)
     @smp_appt = create(:appointment, patient: @single_message_patient, scheduled_date: second_week_of_experiment, device_created_at: week_before_experiment, facility: @facility_2)
@@ -48,6 +49,7 @@ RSpec.describe Experimentation::Export, type: :model do
     @smp_communication = create(:communication, notification: @smp_notification, communication_type: "whatsapp")
     create(:twilio_sms_delivery_detail, communication: @smp_communication, delivered_on: @smp_notification.remind_on, result: "read")
     @smp_past_visit_1 = create(:blood_pressure, :hypertensive, patient: @single_message_patient, device_created_at: experiment_start_date - 6.months, facility: @facility_2)
+    _smp_duplicate_past_visit = create(:blood_pressure, :hypertensive, patient: @single_message_patient, device_created_at: experiment_start_date - 6.months, facility: @facility_2)
     @smp_appt_followup_days = 3
     @smp_followup_1 = create(:blood_pressure, :hypertensive, patient: @single_message_patient, device_created_at: @smp_appt.scheduled_date + @smp_appt_followup_days.days, facility: @facility_2)
 
