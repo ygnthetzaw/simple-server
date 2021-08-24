@@ -4,42 +4,64 @@ module Seed
 
     class << self
       delegate :transaction, to: ActiveRecord::Base
-    end
 
-    def self.create_experiment_patient_data(start_date:, end_date:)
-      transaction do
-        ExperimentSeeder.create_current_experiment(start_date: start_date, end_date: end_date, experiment_name: "Fun time test experiment")
-        experiment = Experimentation::Experiment.find_by!(name: "Fun time test experiment")
-        user = User.first
+      def create_experiment_patient_data(start_date:, end_date:)
+        transaction do
+          experiment_name = "Test123"
+          Seed::ExperimentSeeder.create_current_experiment(start_date: start_date, end_date: end_date, experiment_name: experiment_name)
+          experiment = Experimentation::Experiment.find_by!(name: experiment_name)
+          user = User.first
+          patients = Experimentation::Experiment.candidate_patients.take(10)
+          frequent_flyer = patients.first # give someone two appointments
 
-        patients = Experimentation::Experiment.candidate_patients.take(10)
-        patients.each do |patient|
-          date = (start_date..end_date).to_a.sample
-          appointment = Appointment.create!(id: SecureRandom.uuid, patient: patient, facility: patient.assigned_facility, user: user, status: "scheduled",
-            scheduled_date: date, device_created_at: start_date, device_updated_at: start_date, creation_facility: patient.assigned_facility, appointment_type: "manual")
-          group = experiment.treatment_groups.sample
-          group.patients << patient
-          Experimentation::Runner.schedule_notifications(patient, appointment, group, date)
-          notifications = appointment.reload.notifications
-          notifications.each do |notification|
-            Communication.create!(appointment: appointment, notification: notification, user: user, device_created_at: notification.remind_on, device_updated_at: notification.remind_on, communication_type: "sms")
-            TwilioSmsDeliveryDetail.create!(session_id: "abcde", result: "sent", callee_phone_number: patient.latest_mobile_number, delivered_on: notification.remind_on)
-            Communication.create!(appointment: appointment, notification: notification, user: user, device_created_at: notification.remind_on, device_updated_at: notification.remind_on, communication_type: "whatsapp")
-            TwilioSmsDeliveryDetail.create!(session_id: "abcde", result: "read", callee_phone_number: patient.latest_mobile_number, delivered_on: notification.remind_on)
+          patients.each do |patient|
+            group = add_to_treatment_group(patient, experiment)
+            appointments = []
+
+            if patient == frequent_flyer
+              date1 = experiment.start_date + 1.days
+              date2 = date1 + 11.days
+              appointments << create_appointment(patient, experiment, user, date1)
+              appointments << create_appointment(patient, experiment, user, date2)
+            else
+              date = (start_date.to_date..end_date.to_date).to_a.sample
+              appointments << create_appointment(patient, experiment, user, date)
+            end
+
+            appointments.each do |appointment|
+              date = appointment.scheduled_date
+              Experimentation::Runner.schedule_notifications(patient, appointment, group, date)
+              notifications = appointment.reload.notifications
+              create_communications(patient, appointment, user, notifications)
+            end
+
+            days_to_followup = (-2..10).to_a.sample
+            followup_date = appointments.first.scheduled_date + days_to_followup.days
+            BloodPressure.create!(id: SecureRandom.uuid, patient: patient, user: user, facility: patient.assigned_facility, systolic: 150, diastolic: 90, device_created_at: followup_date, device_updated_at: followup_date, recorded_at: followup_date)
           end
-          days_to_followup = (-2..5).to_a.sample
-          followup_date = date + days_to_followup.days
-          BloodPressure.create!(id: SecureRandom.uuid, patient: patient, user: user, facility: patient.assigned_facility, systolic: 150, diastolic: 90, device_created_at: followup_date, device_updated_at: followup_date, recorded_at: followup_date)
         end
       end
 
-      def connect_detailables(patient, notification)
-        sms = notification.communications.first
-        TwilioSmsDeliveryDetail.create!(communication: sms, session_id: "abcde", result: "sent", callee_phone_number: patient.latest_mobile_number, delivered_on: notification.remind_on)
-        whatsapp = notification.communications.last
-        TwilioSmsDeliveryDetail.create!(communication: whatsapp, session_id: "abcde", result: "read", callee_phone_number: patient.latest_mobile_number, delivered_on: notification.remind_on)
+      def create_appointment(patient, experiment, user, date)
+        before_experiment = experiment.start_date - 1.week
+        Appointment.create!(id: SecureRandom.uuid, patient: patient, facility: patient.assigned_facility, user: user, status: "scheduled", scheduled_date: date,
+                            device_created_at: before_experiment, device_updated_at: before_experiment, creation_facility: patient.assigned_facility, appointment_type: "manual")
       end
-      # someone needs an extra appointment
+
+      def add_to_treatment_group(patient, experiment)
+        group = experiment.treatment_groups.sample
+        Experimentation::TreatmentGroupMembership.create!(patient: patient, treatment_group: group, created_at: experiment.start_date)
+        group
+      end
+
+      def create_communications(patient, appointment, user, notifications)
+        notifications.each do |notification|
+          communication = Communication.create!(appointment: appointment, notification: notification, user: user, device_created_at: notification.remind_on, device_updated_at: notification.remind_on, communication_type: "sms")
+          TwilioSmsDeliveryDetail.create!(communication: communication, session_id: "abcde", result: "sent", callee_phone_number: patient.latest_mobile_number, delivered_on: notification.remind_on)
+          communication = Communication.create!(appointment: appointment, notification: notification, user: user, device_created_at: notification.remind_on, device_updated_at: notification.remind_on, communication_type: "whatsapp")
+          TwilioSmsDeliveryDetail.create!(communication: communication, session_id: "abcde", result: "read", callee_phone_number: patient.latest_mobile_number, delivered_on: notification.remind_on)
+        end
+      end
     end
   end
 end
