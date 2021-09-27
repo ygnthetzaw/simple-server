@@ -73,6 +73,18 @@ class CountryConfig
       supported_genders: %w[male female],
       patient_line_list_show_zone: false
     },
+    MM: {
+      abbreviation: "MM",
+      name: "Myanmar",
+      extended_region_reports: false,
+      states: COUNTRYWISE_STATES["Myanmar"],
+      dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_MM",
+      faker_locale: "en-MM",
+      time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Yangon",
+      sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+95",
+      supported_genders: %w[male female transgender],
+      patient_line_list_show_zone: false
+    },
     US: {
       abbreviation: "US",
       name: "United States",
