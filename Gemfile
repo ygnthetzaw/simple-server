@@ -116,8 +116,10 @@ group :development do
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
   gem "memory_profiler"
-  gem "flamegraph"
-  gem "stackprof"
+  gem "tzinfo-data"
+  gem 'wdm', '>= 0.1.0'
+  #gem "flamegraph"
+  #gem "stackprof"
 end
 
 group :test do
@@ -131,3 +133,8 @@ group :test do
   gem "webdrivers"
   gem "webmock"
 end
+
+
+gem 'net-ssh', '>= 6.0.2'
+gem 'ed25519', '>= 1.2', '< 2.0'
+gem 'bcrypt_pbkdf', '>= 1.0', '< 2.0'
