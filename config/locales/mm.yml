@@ -1,4 +1,4 @@
-en_MM:
+mm:
   date:
     formats:
       default: "%d-%^b-%Y"
