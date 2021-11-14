@@ -47,7 +47,7 @@ RSpec.describe DuplicatePassportAnalytics do
 
     it "generates a pdf and attaches it over an email" do
       Timecop.freeze do
-        report_email = "test@simple.org"
+        report_email = ENV["TEST_RECIPIENT_EMAIL"].presence : "test@simple.innosoftmm.com"
         create(:admin, email: report_email)
         subject = described_class.new(report_email: report_email)
 
@@ -60,7 +60,7 @@ RSpec.describe DuplicatePassportAnalytics do
 
     it "doesn't do anything when the email isn't a power_user" do
       Timecop.freeze do
-        report_email = "test@simple.org"
+        report_email = ENV["TEST_RECIPIENT_EMAIL"].presence : "test@simple.innosoftmm.com"
         create(:admin)
         subject = described_class.new(report_email: report_email)
 
