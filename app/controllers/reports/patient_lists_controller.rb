@@ -14,8 +14,8 @@ class Reports::PatientListsController < AdminController
     else
       {facility_id: @region.source_id}
     end
-
-    PatientListDownloadJob.perform_later(
+    # temporary solve for sending Patient List Download Job
+    PatientListDownloadJob.perform_now(
       recipient_email,
       region_class,
       download_params,
