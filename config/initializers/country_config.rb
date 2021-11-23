@@ -82,7 +82,7 @@ class CountryConfig
       faker_locale: "mm",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Yangon",
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+95",
-      supported_genders: %w[male female transgender],
+      supported_genders: %w[male female],
       patient_line_list_show_zone: false
     },
     US: {
