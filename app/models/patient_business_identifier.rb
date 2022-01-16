@@ -9,6 +9,7 @@ class PatientBusinessIdentifier < ApplicationRecord
     bangladesh_national_id: "bangladesh_national_id",
     sri_lanka_national_id: "sri_lanka_national_id",
     sri_lanka_personal_health_number: "sri_lanka_personal_health_number",
+    myanmar_national_id: "myanmar_national_id",
     ethiopia_medical_record: "ethiopia_medical_record",
     india_national_health_id: "india_national_health_id"
   }

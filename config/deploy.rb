@@ -2,7 +2,8 @@
 lock "~> 3.16.0"
 
 set :application, "simple-server"
-set :repo_url, "https://github.com/simpledotorg/simple-server.git"
+#set :repo_url, "https://github.com/simpledotorg/simple-server.git"
+set :repo_url, "https://github.com/ygnthetzaw/simple-server.git"
 set :deploy_to, -> { "/home/deploy/apps/#{fetch(:application)}" }
 set :rbenv_ruby, File.read(".ruby-version").strip
 
@@ -21,13 +22,16 @@ set :db_local_clean, false
 set :db_remote_clean, true
 set :disallow_pushing, true
 
-set :sentry_api_token, ENV["SENTRY_AUTH_TOKEN"]
-set :sentry_organization, "resolve-to-save-lives"
-set :sentry_repo, "simpledotorg/simple-server"
+#set :sentry_api_token, ENV["SENTRY_AUTH_TOKEN"]
+#set :sentry_organization, "resolve-to-save-lives"
+#set :sentry_repo, "simpledotorg/simple-server"
 # Fire off release notifications to Sentry after successful deploys
 before "deploy:starting", "sentry:validate_config"
 after "deploy:published", "sentry:notice_deployment"
 after "deploy:symlink:linked_dirs", "deploy:fix_bundler_plugin_path"
+
+#before "deploy:starting", "sentry:validate_config"
+#after "deploy:published", "sentry:notice_deployment"
 
 append :linked_dirs, ".bundle"
 append :linked_files, ".env.production"

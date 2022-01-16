@@ -47,7 +47,7 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
           mail = described_class.registration_approval_email(user_id: user.id)
 
           expect(mail.subject).to eq("New Registration: User #{user.full_name} is requesting access to #{organization.name} facilities.")
-          expect(mail.from).to eq(["help@simple.org"])
+          expect(mail.from).to eq([ENV["MAILERS_FROM"].presence || "help@simple.innosoftmm.com"])
           expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email)
           expect(mail.cc).to contain_exactly(org_manager.email)
           expect(mail.bcc).to include(new_power_user.email)
@@ -85,7 +85,7 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
         mail = described_class.reset_password_approval_email(user_id: user.id)
 
         expect(mail.subject).to eq("PIN Reset: User #{user.full_name} is requesting access.")
-        expect(mail.from).to eq(["help@simple.org"])
+        expect(mail.from).to eq([ENV["MAILERS_FROM"].presence || "help@simple.innosoftmm.com"])
         expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email)
         expect(mail.cc).to contain_exactly(org_manager.email)
         expect(mail.bcc).to include(new_power_user.email)

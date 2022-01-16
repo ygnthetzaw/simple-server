@@ -267,6 +267,7 @@ class Facility < ApplicationRecord
 
   LOCALE_MAP = {
     "bangladesh" => {"default" => "bn-BD"},
+    "myanmar" => {"default" => "my-MM"},
     "default" => "en",
     "ethiopia" => {
       "addis ababa" => "am-ET",

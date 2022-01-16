@@ -10,6 +10,7 @@ require "action_mailer/railtie"
 require "action_view/railtie"
 require "action_cable/engine"
 require "sprockets/railtie"
+require "view_component/engine"
 
 require_relative "../lib/extensions/logging_extensions"
 
@@ -20,7 +21,7 @@ Bundler.require(*Rails.groups)
 module SimpleServer
   class Application < Rails::Application
     # Set our "app environment" as early as possible here
-    Object.const_set(:SIMPLE_SERVER_ENV, ENV["SIMPLE_SERVER_ENV"])
+    Object.const_set("SIMPLE_SERVER_ENV", ENV["SIMPLE_SERVER_ENV"])
 
     console do
       # Colors don't work right in console with our logging, so turn them off
@@ -43,7 +44,7 @@ module SimpleServer
 
     # Locale configuration
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
-    config.i18n.available_locales = %w[en mr-IN pa-Guru-IN bn-BD kn-IN en_BD en_IN en_ET en_LK en-IND bn-IN hi-IN ta-IN te-IN am-ET om-ET si-LK sid-ET so-ET ta-LK ti-ET]
+    config.i18n.available_locales = %w[en mr-IN pa-Guru-IN bn-BD kn-IN en_BD en_IN en_ET en_LK en-IND bn-IN hi-IN ta-IN te-IN am-ET om-ET si_LK sid-ET so-ET ta_LK ti-ET en_MM mm my-MM]
     config.i18n.fallbacks = [:en]
     config.i18n.default_locale = :en
 

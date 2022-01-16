@@ -23,6 +23,12 @@
       "endpoint": "https://api.lk.simple.org/api/",
       "display_name": "Sri Lanka",
       "isd_code": "94"
+    },
+    {
+      "country_code": "MM",
+      "endpoint": "https://simple.innosoftmm.com/api/",
+      "display_name": "Myanmar",
+      "isd_code": "95"
     }
   ],
   "v2": {
@@ -68,6 +74,17 @@
           {
             "display_name": "Sri Lanka",
             "endpoint": "https://api.lk.simple.org/api/"
+          }
+        ]
+      },
+      {
+        "country_code": "MM",
+        "display_name": "Myanmar",
+        "isd_code": "95",
+        "deployments": [
+          {
+            "display_name": "Myanmar",
+            "endpoint": "https://simple.innosoftmm.com/api/"
           }
         ]
       }
