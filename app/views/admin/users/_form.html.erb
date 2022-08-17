@@ -23,6 +23,13 @@
       <%= form.password_field :password, id: :user_password, pattern: "[0-9]{4}", label: "PIN", help: "4 digits only", autocomplete: "new-password", optional: true %>
       <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation", optional: true %>
       <%= form.select :registration_facility_id, facility_search_options, {}, {class: "selectpicker", data: {live_search: true, size: 5}} %>
+      
+        <%= access_level_select(form, current_admin.permitted_access_levels,
+          {
+              required: true,
+              disabled: false,
+              current_access_level: "Power User"
+          }) %>
       <%= form.primary %>
     <% end %>
   </div>
