@@ -26,8 +26,8 @@ set :disallow_pushing, true
 #set :sentry_organization, "resolve-to-save-lives"
 #set :sentry_repo, "simpledotorg/simple-server"
 # Fire off release notifications to Sentry after successful deploys
-before "deploy:starting", ""
-after "deploy:published", ""
+#before "deploy:starting", ""
+#after "deploy:published", ""
 after "deploy:symlink:linked_dirs", "deploy:fix_bundler_plugin_path"
 
 #before "deploy:starting", "sentry:validate_config"
