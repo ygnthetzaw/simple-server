@@ -1,2 +1,2 @@
-server "3.20.209.15", user: "deploy", roles: %w[web app db cron sidekiq]
-server "3.20.209.15", user: "deploy", roles: %w[web app sidekiq]
+server "45.76.151.244", user: "deploy", roles: %w[web app db cron sidekiq]
+server "45.76.151.244", user: "deploy", roles: %w[web app sidekiq]
